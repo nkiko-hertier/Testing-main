@@ -32,7 +32,7 @@ jobs:
           path: dist/VoiceRemover
 
   build-macos-intel:
-    runs-on: macos-13   # Intel runner
+    runs-on: macos-15-intel   # Intel runner (macos-13 was deprecated Dec 2025)
     steps:
       - uses: actions/checkout@v4
 
