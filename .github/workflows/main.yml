@@ -6,8 +6,8 @@ on:
   workflow_dispatch:   # lets you trigger it manually from the Actions tab too
 
 jobs:
-  build-macos:
-    runs-on: macos-latest
+  build-macos-arm64:
+    runs-on: macos-14   # Apple Silicon (M-series) runner
     steps:
       - uses: actions/checkout@v4
 
@@ -22,13 +22,38 @@ jobs:
       - name: Install Python dependencies
         run: pip3 install numpy demucs torch pyinstaller
 
-      - name: Build macOS executable
+      - name: Build macOS (Apple Silicon) executable
         run: pyinstaller --onefile --name VoiceRemover voice-remover.py
 
-      - name: Upload macOS build
+      - name: Upload macOS Apple Silicon build
         uses: actions/upload-artifact@v4
         with:
-          name: VoiceRemover-macOS
+          name: VoiceRemover-macOS-arm64
+          path: dist/VoiceRemover
+
+  build-macos-intel:
+    runs-on: macos-13   # Intel runner
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install ffmpeg
+        run: brew install ffmpeg
+
+      - name: Install Python dependencies
+        run: pip3 install numpy demucs torch pyinstaller
+
+      - name: Build macOS (Intel) executable
+        run: pyinstaller --onefile --name VoiceRemover voice-remover.py
+
+      - name: Upload macOS Intel build
+        uses: actions/upload-artifact@v4
+        with:
+          name: VoiceRemover-macOS-intel
           path: dist/VoiceRemover
 
   build-windows:
