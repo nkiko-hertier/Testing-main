@@ -1,0 +1,57 @@
+name: Build Executables
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:   # lets you trigger it manually from the Actions tab too
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install ffmpeg
+        run: brew install ffmpeg
+
+      - name: Install Python dependencies
+        run: pip3 install numpy demucs torch pyinstaller
+
+      - name: Build macOS executable
+        run: pyinstaller --onefile --name VoiceRemover voice-remover.py
+
+      - name: Upload macOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: VoiceRemover-macOS
+          path: dist/VoiceRemover
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install ffmpeg
+        run: choco install ffmpeg -y
+
+      - name: Install Python dependencies
+        run: pip install numpy demucs torch pyinstaller
+
+      - name: Build Windows executable
+        run: pyinstaller --onefile --name VoiceRemover voice-remover.py
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: VoiceRemover-Windows
+          path: dist/VoiceRemover.exe
